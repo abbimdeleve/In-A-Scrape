@@ -1,0 +1,83 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const axios = require("axios");
+const cheerio = require("cheerio");
+const db = require("./models");
+const PORT = 3000;
+const app = express();
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.static("public"));
+
+mongoose.connect("mongodb://localhost/abbiisgreat", { useNewUrlParser: true });
+
+app.get("/scrape", function(req, res) {
+ 
+  axios.get("https://www.chicagotribune.com/news/breaking/").then(function(response) {
+   
+    const $ = cheerio.load(response.data);
+
+    $("div.col-desktop-6 div.crd--cnt").each(function(i, element) {
+      
+      const result = {};
+
+      result.title = $(this).find("h5").text();
+      if (result.title){
+        result.articleLink = `http://chicagotribune.com/politics${$(this).find("a").attr("href")}`;
+            
+      }
+      console.log(result)
+     
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    });
+
+    res.send("Scrapified");
+  });
+});
+
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+  // TODO: Finish the route so it grabs all of the articles
+  db.Article.find().then( function (dbArticle, err) {
+    if(err) return console.log(err);
+    res.json(dbArticle);
+    console.log(dbArticle);
+  })
+});
+
+
+app.get("/articles/:id", function(req, res) {
+
+  db.Article.findById(req.params.id).populate("Post").then(function(dbArticle, err) {
+    if(err) return console.log(err);
+    res.json(dbArticle)
+  })
+  // if doesn't work, check if "Post" needs to be lowercase
+});
+
+
+app.post("/articles/:id", function(req, res) {
+ 
+  db.Post.create(req.body).then(function(dbPost) {
+    return db.Article.findOneAndUpdate({_id: req.params.id}, {$push: {post: dbPost._id}}, {new: true}).then(function(dbArticle, err) {
+      if(err) return console.log(err);
+      res.json(dbArticle);
+  })
+  
+  })
+  // save the new note that gets posted to the Notes collection
+  // then find an article from the req.params.id
+  // and update it's "note" property with the _id of the new note
+});
+
+// Start the server
+app.listen(PORT, function() {
+  console.log("App running on port " + PORT + "!");
+});
