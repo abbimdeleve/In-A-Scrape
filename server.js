@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const cheerio = require("cheerio");
 const db = require("./models");
-const PORT = 3000;
+const PORT = 5000;
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -14,7 +14,7 @@ mongoose.connect("mongodb://localhost/abbiisgreat", { useNewUrlParser: true });
 
 app.get("/scrape", function(req, res) {
  
-  axios.get("https://www.chicagotribune.com/news/breaking/").then(function(response) {
+  axios.get("https://www.chicagotribune.com/politics").then(function(response) {
    
     const $ = cheerio.load(response.data);
 
@@ -25,7 +25,6 @@ app.get("/scrape", function(req, res) {
       result.title = $(this).find("h5").text();
       if (result.title){
         result.articleLink = `http://chicagotribune.com/politics${$(this).find("a").attr("href")}`;
-            
       }
       console.log(result)
      
@@ -72,12 +71,10 @@ app.post("/articles/:id", function(req, res) {
   })
   
   })
-  // save the new note that gets posted to the Notes collection
-  // then find an article from the req.params.id
-  // and update it's "note" property with the _id of the new note
+ 
 });
 
-// Start the server
+
 app.listen(PORT, function() {
-  console.log("App running on port " + PORT + "!");
+  console.log("App on localhost:" + PORT);
 });
