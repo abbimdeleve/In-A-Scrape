@@ -4,10 +4,10 @@ $(document).ready(function() {
     for (let i = 0; i < data.length; i++) {
       const articles = $("<div class='col-md-4' id='arts'>") 
       articles.append(`<p data-id='${data[i]._id}'> 
-      ${data[i].title}  <a href=${data[i].articleLink}>Link</>
+      ${data[i].title}  <a href=${data[i].articleLink}>Link</> 
       </p>`);
       $("#newsFeed").append(articles)
-    }
+    }//i wanted to put a link to the posts here but wasn't sure how to and it is late :)
   });
 
   $("#newsFeed").on("click", "#arts", function () {
