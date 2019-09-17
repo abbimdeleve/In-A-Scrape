@@ -51,7 +51,7 @@ app.get("/articles", function(req, res) {
   })
 });
 
-
+//wanted to use this route to show all the comments on each article
 app.get("/articles/:id", function(req, res) {
 
   db.Article.findById(req.params.id).populate("Post").then(function(dbArticle, err) {
@@ -76,6 +76,6 @@ app.post("/articles/:id", function(req, res) {
 });
 
 
-app.listen(PORT, function() {
+app.listen(PORT, "0.0.0.0", function() {
   console.log("App on localhost:" + PORT);
 });
