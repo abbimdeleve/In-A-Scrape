@@ -47,7 +47,7 @@ app.get("/articles", function(req, res) {
   db.Article.find().then( function (dbArticle, err) {
     if(err) return console.log(err);
     res.json(dbArticle);
-    console.log(dbArticle);
+    // console.log(dbArticle);
   })
 });
 
@@ -63,8 +63,9 @@ app.get("/articles/:id", function(req, res) {
 
 
 app.post("/articles/:id", function(req, res) {
- 
+ console.log("hey", req.body)
   db.Post.create(req.body).then(function(dbPost) {
+    console.log("hello")
     return db.Article.findOneAndUpdate({_id: req.params.id}, {$push: {post: dbPost._id}}, {new: true}).then(function(dbArticle, err) {
       if(err) return console.log(err);
       res.json(dbArticle);
