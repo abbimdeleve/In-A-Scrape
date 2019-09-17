@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/abbiisgreat", { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/abbiisgreat", { useNewUrlParser: true });
 
 app.get("/scrape", function(req, res) {
  
@@ -76,6 +76,6 @@ app.post("/articles/:id", function(req, res) {
 });
 
 
-app.listen(PORT, "0.0.0.0", function() {
+app.listen(PORT, function() {
   console.log("App on localhost:" + PORT);
 });
